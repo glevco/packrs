@@ -6,4 +6,5 @@ description = "Extremely simple byte (un)packing."
 license = "MIT OR Apache-2.0"
 
 [dependencies]
+num-traits = "0.2.19"
 thiserror = "1.0.63"
