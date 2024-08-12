@@ -32,10 +32,12 @@ impl<'a> UnpackLength<'a> for &'a [u8] {
     type Error = UnpackError;
 
     fn unpack(buf: &mut &'a [u8], len: usize) -> Result<Self, Self::Error> {
-        let (len_bytes, rest) = buf.split_at_checked(len).ok_or(UnpackError::NotEnoughBytes {
-            expected: len,
-            found: buf.len(),
-        })?;
+        let (len_bytes, rest) = buf
+            .split_at_checked(len)
+            .ok_or(UnpackError::NotEnoughBytes {
+                expected: len,
+                found: buf.len(),
+            })?;
 
         *buf = rest;
         Ok(len_bytes)

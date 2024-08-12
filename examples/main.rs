@@ -1,4 +1,4 @@
-use packrs::{Unpack, unpack, BigEndian, Pack, pack_into, pack};
+use packrs::{pack, pack_into, unpack, BigEndian, Pack, Unpack};
 
 #[derive(Debug)]
 struct Inner<'a> {
