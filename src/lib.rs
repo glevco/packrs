@@ -2,6 +2,8 @@ mod macros;
 mod number;
 mod pack;
 mod unpack;
+#[cfg(feature = "arrayvec")]
+mod arrayvec;
 
 pub use number::*;
 pub use pack::*;

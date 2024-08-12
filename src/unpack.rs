@@ -26,6 +26,9 @@ pub enum UnpackError {
     NotEnoughBytes { expected: usize, found: usize },
     #[error("could not decode UTF-8 str")]
     Utf8Error(#[from] std::str::Utf8Error),
+    #[cfg(feature = "arrayvec")]
+    #[error("too many bytes to unpack (capacity {capacity}, found {found})")]
+    CapacityError { capacity: usize, found: usize },
 }
 
 impl<'a> UnpackLength<'a> for &'a [u8] {
@@ -76,7 +79,6 @@ impl<'a, U: Unpack<'a>> UnpackLength<'a> for Vec<U> {
 
     fn unpack(buf: &mut &'a [u8], len: usize) -> Result<Self, Self::Error> {
         let mut items = Vec::with_capacity(len);
-
         for _ in 0..len {
             items.push(U::unpack(buf)?);
         }
