@@ -1,4 +1,6 @@
-use packrs::{pack, pack_into, unpack, BigEndian, Pack, Unpack};
+use packrs::hex::UnpackHex;
+use packrs::{pack, pack_into, unpack, BigEndian, LittleEndian, Pack, Unpack, UnpackError};
+use std::ops::Deref;
 
 #[derive(Debug)]
 struct Inner<'a> {
@@ -71,5 +73,7 @@ fn main() -> anyhow::Result<()> {
     println!("packed: {:?}", packed);
     let unpacked = Outer::unpack(&mut &packed[..])?;
     println!("unpacked: {:?}", unpacked);
+    let n: LittleEndian<u16> = UnpackHex::from_hex("00ff").unwrap();
+    println!("{:?}", n);
     Ok(())
 }

@@ -29,6 +29,9 @@ pub enum UnpackError {
     #[cfg(feature = "arrayvec")]
     #[error("too many bytes to unpack (capacity {capacity}, found {found})")]
     CapacityError { capacity: usize, found: usize },
+    #[cfg(feature = "hex")]
+    #[error("error decoding hex bytes")]
+    FromHexError(#[from] hex::FromHexError),
 }
 
 impl<'a> UnpackLength<'a> for &'a [u8] {
@@ -96,11 +99,11 @@ impl<const N: usize> Unpack<'_> for [u8; N] {
     }
 }
 
-impl<'a, const N: usize, T: Unpack<'a>> Unpack<'a> for [T; N] {
-    type Error = T::Error;
+impl<'a, const N: usize, U: Unpack<'a>> Unpack<'a> for [U; N] {
+    type Error = U::Error;
 
     fn unpack(buf: &mut &'a [u8]) -> Result<Self, Self::Error> {
-        let items: Vec<T> = UnpackLength::unpack(buf, N)?;
+        let items: Vec<U> = UnpackLength::unpack(buf, N)?;
         Ok(items.try_into().ok().unwrap())
     }
 }

@@ -1,15 +1,15 @@
-use arrayvec::{ArrayString, ArrayVec};
 use crate::{Unpack, UnpackError, UnpackLength};
+use arrayvec::{ArrayString, ArrayVec};
 
-impl<'a, const CAP: usize> UnpackLength<'a> for ArrayVec<u8, CAP> {
+impl<const CAP: usize> UnpackLength<'_> for ArrayVec<u8, CAP> {
     type Error = UnpackError;
 
-    fn unpack(buf: &mut &'a [u8], len: usize) -> Result<Self, Self::Error> {
+    fn unpack(buf: &mut &[u8], len: usize) -> Result<Self, Self::Error> {
         if len > CAP {
             return Err(UnpackError::CapacityError {
                 capacity: CAP,
                 found: len,
-            })
+            });
         }
 
         let bytes: &[u8] = UnpackLength::unpack(buf, len)?;
@@ -20,12 +20,12 @@ impl<'a, const CAP: usize> UnpackLength<'a> for ArrayVec<u8, CAP> {
 impl<'a, const CAP: usize> UnpackLength<'a> for ArrayString<CAP> {
     type Error = UnpackError;
 
-    fn unpack(buf: &mut &'a [u8], len: usize) -> Result<Self, Self::Error> {
+    fn unpack(buf: &mut &[u8], len: usize) -> Result<Self, Self::Error> {
         if len > CAP {
             return Err(UnpackError::CapacityError {
                 capacity: CAP,
                 found: len,
-            })
+            });
         }
 
         let str = UnpackLength::unpack(buf, len)?;
@@ -33,12 +33,12 @@ impl<'a, const CAP: usize> UnpackLength<'a> for ArrayString<CAP> {
     }
 }
 
-impl<'a, const CAP: usize, U, E> UnpackLength<'a> for ArrayVec<U, CAP>
+impl<'a, const CAP: usize, U> UnpackLength<'a> for ArrayVec<U, CAP>
 where
-    E: From<UnpackError>,
-    U: Unpack<'a, Error = E>,
+    U: Unpack<'a>,
+    U::Error: From<UnpackError>,
 {
-    type Error = E;
+    type Error = U::Error;
 
     fn unpack(buf: &mut &'a [u8], len: usize) -> Result<Self, Self::Error> {
         if len > CAP {
@@ -47,16 +47,15 @@ where
                 found: len,
             })?
         }
-        
+
         let mut items = ArrayVec::new();
         for _ in 0..len {
             items.push(U::unpack(buf)?)
         }
-        
+
         Ok(items)
     }
 }
-
 
 impl<const CAP: usize> Unpack<'_> for ArrayVec<u8, CAP> {
     type Error = UnpackError;
