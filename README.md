@@ -1,3 +1,12 @@
+# packrs
+
 WIP
 
-TODO: license
+### TODO
+
+- [ ] Add docs
+- [ ] Inline functions?
+
+### License
+
+TODO
