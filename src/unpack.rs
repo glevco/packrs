@@ -122,6 +122,7 @@ impl<'a, const N: usize, U: Unpack<'a>> Unpack<'a> for [U; N] {
 #[cfg(test)]
 mod tests {
     use super::*;
+    // TODO: Test peek
 
     #[test]
     fn test_unpack_byte_slice_not_enough_bytes() {

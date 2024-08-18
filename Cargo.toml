@@ -9,7 +9,12 @@ license = "MIT OR Apache-2.0"
 arrayvec = { version = "0.7.4", optional = true }
 hex = { version = "0.4.3", optional = true }
 num-traits = "0.2.19"
+paste = "1.0.15"
 thiserror = "1.0.63"
 
 [dev-dependencies]
 anyhow = "1.0.86"
+
+[[example]]
+name = "main"
+required-features = ["hex"]

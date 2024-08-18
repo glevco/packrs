@@ -53,3 +53,16 @@ impl<const N: usize, P: Pack> Pack for [P; N] {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_pack_byte_slice() {
+        let mut buf = vec![1, 2, 3];
+        let data = &[4, 5];
+        data.pack_into(&mut buf);
+        assert_eq!(buf, vec![1, 2, 3, 4, 5])
+    }
+}
