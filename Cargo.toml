@@ -14,7 +14,3 @@ thiserror = "1.0.63"
 
 [dev-dependencies]
 anyhow = "1.0.86"
-
-[[example]]
-name = "main"
-required-features = ["hex"]

@@ -7,6 +7,7 @@ mod number;
 mod pack;
 mod unpack;
 
+pub use macros::*;
 pub use number::*;
 pub use pack::*;
 pub use unpack::*;
