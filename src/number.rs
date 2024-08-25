@@ -1,7 +1,30 @@
 use crate::pack::Pack;
-use crate::unpack::{Unpack, UnpackError};
+use crate::unpack::{split_buf, Unpack, UnpackError};
 use num_traits::{FromBytes, ToBytes};
 use std::ops::Deref;
+
+macro_rules! impl_single_byte {
+    ($ty:ty) => {
+        impl Unpack<'_> for $ty {
+            type Error = UnpackError;
+
+            fn unpack(buf: &mut &[u8]) -> Result<Self, Self::Error> {
+                let (len_bytes, rest) = split_buf(buf, 1)?;
+                *buf = rest;
+                Ok(len_bytes[0] as Self)
+            }
+        }
+
+        impl Pack for $ty {
+            fn pack_into(&self, buf: &mut Vec<u8>) {
+                buf.push(*self as u8)
+            }
+        }
+    };
+}
+
+impl_single_byte!(u8);
+impl_single_byte!(i8);
 
 macro_rules! impl_number {
     ($name:ident, $from_bytes:ident, $to_bytes:ident) => {
@@ -53,7 +76,7 @@ impl_number!(BigEndian, from_be_bytes, to_be_bytes);
 impl_number!(LittleEndian, from_le_bytes, to_le_bytes);
 
 // TODO
-//  - property testing with quickcheck/arbitrary
+//  - property testing with quickcheck/arbitrary/proptest
 //  - test failures
 #[cfg(test)]
 mod tests {

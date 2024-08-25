@@ -52,6 +52,20 @@ macro_rules! unpack {
     };
 }
 
+#[macro_export]
+macro_rules! peek {
+    ($buf:expr, ($($ty:ty),+)) => {
+        ($(<$ty as $crate::Unpack>::peek($buf)?),+)
+    };
+}
+
+#[macro_export]
+macro_rules! unpack_len {
+    ($buf:expr, $ty:ty, $len:expr) => {
+        <$ty as $crate::UnpackLength>::unpack($buf, $len)?
+    };
+}
+
 // TODO: legacy
 // #[macro_export]
 // macro_rules! unpack {

@@ -1,22 +1,6 @@
 use crate::{Unpack, UnpackError, UnpackLength};
 use arrayvec::{ArrayString, ArrayVec};
 
-impl<const CAP: usize> UnpackLength<'_> for ArrayVec<u8, CAP> {
-    type Error = UnpackError;
-
-    fn unpack(buf: &mut &[u8], len: usize) -> Result<Self, Self::Error> {
-        if len > CAP {
-            return Err(UnpackError::CapacityError {
-                capacity: CAP,
-                found: len,
-            });
-        }
-
-        let bytes: &[u8] = UnpackLength::unpack(buf, len)?;
-        Ok(ArrayVec::try_from(bytes).unwrap())
-    }
-}
-
 impl<'a, const CAP: usize> UnpackLength<'a> for ArrayString<CAP> {
     type Error = UnpackError;
 
@@ -54,15 +38,6 @@ where
         }
 
         Ok(items)
-    }
-}
-
-impl<const CAP: usize> Unpack<'_> for ArrayVec<u8, CAP> {
-    type Error = UnpackError;
-
-    fn unpack(buf: &mut &[u8]) -> Result<Self, Self::Error> {
-        let array: [u8; CAP] = Unpack::unpack(buf)?;
-        Ok(ArrayVec::from(array))
     }
 }
 
