@@ -1,6 +1,7 @@
 pub trait Pack {
     fn pack_into(&self, buf: &mut Vec<u8>);
 
+    #[inline]
     fn pack(&self) -> Vec<u8> {
         let mut buf = vec![];
         self.pack_into(&mut buf);
@@ -9,24 +10,28 @@ pub trait Pack {
 }
 
 impl Pack for &[u8] {
+    #[inline]
     fn pack_into(&self, buf: &mut Vec<u8>) {
         buf.extend(self.iter());
     }
 }
 
 impl Pack for &str {
+    #[inline]
     fn pack_into(&self, buf: &mut Vec<u8>) {
         buf.extend(self.bytes());
     }
 }
 
 impl Pack for String {
+    #[inline]
     fn pack_into(&self, buf: &mut Vec<u8>) {
         buf.extend(self.bytes());
     }
 }
 
 impl<P: Pack> Pack for Vec<P> {
+    #[inline]
     fn pack_into(&self, buf: &mut Vec<u8>) {
         for item in self {
             item.pack_into(buf)
@@ -35,6 +40,7 @@ impl<P: Pack> Pack for Vec<P> {
 }
 
 impl<const N: usize, P: Pack> Pack for [P; N] {
+    #[inline]
     fn pack_into(&self, buf: &mut Vec<u8>) {
         for item in self {
             item.pack_into(buf)

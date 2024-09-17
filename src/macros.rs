@@ -26,6 +26,7 @@ macro_rules! pack {
 macro_rules! impl_unpack_n {
     ($($n:literal,)? $($ty:ident),+) => {
         paste! {
+            #[inline]
             pub fn [<unpack $($n)?>]<'a, $($ty,)+ $([<E $ty>],)+ E>(buf: &mut &'a[u8]) -> Result<($($ty),+), E>
             where
                 $(E: From<[<E $ty>]>,)+

@@ -8,6 +8,7 @@ macro_rules! impl_single_byte {
         impl Unpack<'_> for $ty {
             type Error = UnpackError;
 
+            #[inline]
             fn unpack(buf: &mut &[u8]) -> Result<Self, Self::Error> {
                 let (len_bytes, rest) = split_buf(buf, 1)?;
                 *buf = rest;
@@ -16,6 +17,7 @@ macro_rules! impl_single_byte {
         }
 
         impl Pack for $ty {
+            #[inline]
             fn pack_into(&self, buf: &mut Vec<u8>) {
                 buf.push(*self as u8)
             }
@@ -53,7 +55,8 @@ macro_rules! impl_number {
             T: ToBytes + FromBytes<Bytes = [u8; N]>,
         {
             type Error = UnpackError;
-
+    
+            #[inline]
             fn unpack(buf: &mut &[u8]) -> Result<Self, Self::Error> {
                 let bytes = Unpack::unpack(buf)?;
                 let num = FromBytes::$from_bytes(&bytes);
@@ -65,6 +68,7 @@ macro_rules! impl_number {
         where
             T: ToBytes<Bytes = [u8; N]> + FromBytes,
         {
+            #[inline]
             fn pack_into(&self, buf: &mut Vec<u8>) {
                 self.$to_bytes().pack_into(buf);
             }

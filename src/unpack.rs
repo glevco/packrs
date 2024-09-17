@@ -5,6 +5,7 @@ pub trait Unpack<'a>: Sized {
 
     fn unpack(buf: &mut &'a [u8]) -> Result<Self, Self::Error>;
 
+    #[inline]
     fn peek(buf: &'a [u8]) -> Result<Self, Self::Error> {
         Self::unpack(&mut &buf[..])
     }
@@ -15,6 +16,7 @@ pub trait UnpackLength<'a>: Sized {
 
     fn unpack(buf: &mut &'a [u8], len: usize) -> Result<Self, Self::Error>;
 
+    #[inline]
     fn peek(buf: &'a [u8], len: usize) -> Result<Self, Self::Error> {
         Self::unpack(&mut &buf[..], len)
     }
@@ -34,6 +36,7 @@ pub enum UnpackError {
     FromHexError(#[from] hex::FromHexError),
 }
 
+#[inline]
 pub(crate) fn split_buf(buf: &[u8], len: usize) -> Result<(&[u8], &[u8]), UnpackError> {
     buf.split_at_checked(len)
         .ok_or(UnpackError::NotEnoughBytes {
@@ -45,6 +48,7 @@ pub(crate) fn split_buf(buf: &[u8], len: usize) -> Result<(&[u8], &[u8]), Unpack
 impl<'a> UnpackLength<'a> for &'a [u8] {
     type Error = UnpackError;
 
+    #[inline]
     fn unpack(buf: &mut &'a [u8], len: usize) -> Result<Self, Self::Error> {
         let (len_bytes, rest) = split_buf(buf, len)?;
         *buf = rest;
@@ -55,6 +59,7 @@ impl<'a> UnpackLength<'a> for &'a [u8] {
 impl<'a> UnpackLength<'a> for &'a str {
     type Error = UnpackError;
 
+    #[inline]
     fn unpack(buf: &mut &'a [u8], len: usize) -> Result<Self, Self::Error> {
         let (len_bytes, rest) = split_buf(buf, len)?;
         let str = std::str::from_utf8(len_bytes)?;
@@ -66,6 +71,7 @@ impl<'a> UnpackLength<'a> for &'a str {
 impl<'a> UnpackLength<'a> for String {
     type Error = UnpackError;
 
+    #[inline]
     fn unpack(buf: &mut &'a [u8], len: usize) -> Result<Self, Self::Error> {
         let str: &'a str = UnpackLength::unpack(buf, len)?;
         Ok(str.to_string())
@@ -75,6 +81,7 @@ impl<'a> UnpackLength<'a> for String {
 impl<'a, U: Unpack<'a>> UnpackLength<'a> for Vec<U> {
     type Error = U::Error;
 
+    #[inline]
     fn unpack(buf: &mut &'a [u8], len: usize) -> Result<Self, Self::Error> {
         let original = *buf;
         let mut items = Vec::with_capacity(len);
@@ -95,6 +102,7 @@ impl<'a, U: Unpack<'a>> UnpackLength<'a> for Vec<U> {
 impl<'a, const N: usize, U: Unpack<'a>> Unpack<'a> for [U; N] {
     type Error = U::Error;
 
+    #[inline]
     fn unpack(buf: &mut &'a [u8]) -> Result<Self, Self::Error> {
         let items: Vec<U> = UnpackLength::unpack(buf, N)?;
         Ok(items.try_into().ok().unwrap())

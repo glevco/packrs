@@ -4,6 +4,7 @@ use arrayvec::{ArrayString, ArrayVec};
 impl<'a, const CAP: usize> UnpackLength<'a> for ArrayString<CAP> {
     type Error = UnpackError;
 
+    #[inline]
     fn unpack(buf: &mut &[u8], len: usize) -> Result<Self, Self::Error> {
         if len > CAP {
             return Err(UnpackError::CapacityError {
@@ -24,6 +25,7 @@ where
 {
     type Error = U::Error;
 
+    #[inline]
     fn unpack(buf: &mut &'a [u8], len: usize) -> Result<Self, Self::Error> {
         if len > CAP {
             Err(UnpackError::CapacityError {
@@ -44,6 +46,7 @@ where
 impl<const CAP: usize> Unpack<'_> for ArrayString<CAP> {
     type Error = UnpackError;
 
+    #[inline]
     fn unpack(buf: &mut &[u8]) -> Result<Self, Self::Error> {
         let array: [u8; CAP] = Unpack::unpack(buf)?;
         Ok(ArrayString::from_byte_string(&array)?)
@@ -53,6 +56,7 @@ impl<const CAP: usize> Unpack<'_> for ArrayString<CAP> {
 impl<'a, const CAP: usize, U: Unpack<'a>> Unpack<'a> for ArrayVec<U, CAP> {
     type Error = U::Error;
 
+    #[inline]
     fn unpack(buf: &mut &'a [u8]) -> Result<Self, Self::Error> {
         let array: [U; CAP] = Unpack::unpack(buf)?;
         Ok(ArrayVec::from(array))
